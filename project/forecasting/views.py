@@ -1,7 +1,8 @@
 import csv
 import io
 from pyexpat.errors import messages
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
+import numpy
 import pandas as pd
 from django.shortcuts import render
 from .models import Barang, Penjualan, Pelanggan, DataForecast,TestPenjualan
@@ -21,7 +22,12 @@ import math
 from itertools import groupby
 from operator import itemgetter
 
+from authentification.decorators import allowed_executive
+from authentification.views import dataUserArray
+
+
 # Create your views here.
+@allowed_executive(allowed_roles=dataUserArray)
 def forecastingRule(request):
     dataB = Barang.objects.all()
     dataPenj = TestPenjualan.objects.all()
@@ -37,7 +43,12 @@ def forecastingRule(request):
         return HttpResponseRedirect('/predictForecastingRule')
     return render(request, 'forecasting.html',data)
 
+dataArrPredFore = []
+
+@allowed_executive(allowed_roles=dataUserArray)
 def predictForecastingRule(request):
+
+    dataArrPredFore.clear()
 
     idBarang = request.session.get('id_barang')
     monthPred = request.session.get('inputMonthPred')
@@ -132,13 +143,34 @@ def predictForecastingRule(request):
     context["prediction_data"] = arrayPrediction
     context["number_of_month_pred"] = intNum
 
-    print(context)
-
-
+    numTemp = 0
+    for dataDate,dataPred in zip(arrayDate,arrayPrediction):
+        numTemp = numTemp + 1
+        if numTemp <= int(len(arrayDate)-intNum):
+            status = 'Production'
+            dataStore = {
+                'month_date' : dataDate,
+                'value' : dataPred,
+                'status' : status
+            }
+            dataArrPredFore.append(dataStore)
+        else :
+            status = 'Prediction'
+            dataStore = {
+                'month_date' : dataDate,
+                'value' : dataPred,
+                'status' : status
+            }
+            dataArrPredFore.append(dataStore)
 
     return render(request, 'resultpredictforecasting.html',context)
 
+@allowed_executive(allowed_roles=dataUserArray)
 def excelForecastingRule(request):
+
+    dataArrPredFore.clear()
+
+
     # declaring template
     template = "forecastingexcel.html"
     dataForecast = DataForecast.objects.all
@@ -238,9 +270,38 @@ def excelForecastingRule(request):
     context["prediction_data"] = arrayPrediction
     context["number_of_month_pred"] = intNum
 
-    print(context)
-
+    numTemp = 0
+    for dataDate,dataPred in zip(arrayDate,arrayPrediction):
+        numTemp = numTemp + 1
+        if numTemp <= int(len(arrayDate)-intNum):
+            status = 'Production'
+            dataStore = {
+                'month_date' : dataDate,
+                'value' : dataPred,
+                'status' : status
+            }
+            dataArrPredFore.append(dataStore)
+        else :
+            status = 'Prediction'
+            dataStore = {
+                'month_date' : dataDate,
+                'value' : dataPred,
+                'status' : status
+            }
+            dataArrPredFore.append(dataStore)
 
     return render(request, 'forecastingexcel.html', context)
+
+@allowed_executive(allowed_roles=dataUserArray)
+def export_csv_forecasting(request):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename=Data-Prediksi-Forecasting'+'-'+str(datetime.now())+'.csv'
+
+    writer = csv.writer(response)
+    dataHeader = ['Month Date','Value Data','Status']
+    writer.writerow(dataHeader)
+    for data in dataArrPredFore:
+        writer.writerow([data['month_date'],data['value'],data['status']])
+    return response
 
 

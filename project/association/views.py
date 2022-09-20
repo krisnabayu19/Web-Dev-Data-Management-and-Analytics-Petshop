@@ -1,17 +1,31 @@
 import csv
+from datetime import datetime
 import io
 import ast
 import json
+from os import write
+from urllib import response
 import pandas as pd
 from pyexpat.errors import messages
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, render
 from .models import Barang, Penjualan, Pelanggan, DataAssociationExcel
 from itertools import groupby
 from operator import itemgetter
 from fpgrowth_py import fpgrowth
 
+from authentification.decorators import allowed_executive
+from authentification.views import dataUserArray
+
+from io import StringIO
+import os, zipfile
+
+from openpyxl import Workbook
+
+import xlsxwriter
+
 # Create your views here.
+@allowed_executive(allowed_roles=dataUserArray)
 def assosiationRule(request):
     dataPenj = Penjualan.objects.all()
     if request.method == 'POST':
@@ -22,7 +36,12 @@ def assosiationRule(request):
         return HttpResponseRedirect('/predictAssociationRule')
     return render(request, 'association.html',{'dataPenj':dataPenj})
 
+dataArrPredAsso = []
+
+@allowed_executive(allowed_roles=dataUserArray)
 def predictAssociationRule(request):
+    dataArrPredAsso.clear()
+
     minConf = request.session.get('inputMinConf')
     minSupp = request.session.get('inputMinSupp')
 
@@ -56,11 +75,15 @@ def predictAssociationRule(request):
             'valuePredict' : valuePredict
         }
         pred.append(dataPred)
+        dataArrPredAsso.append(dataPred)
     predContext["pred"] = pred
+    print(pred)
     return render(request, 'resultpredictassociation.html',predContext)
 
-
+@allowed_executive(allowed_roles=dataUserArray)
 def excelAssosiationRule(request):
+
+    dataArrPredAsso.clear()
 
     # declaring template
     template = "associationexcel.html"
@@ -122,5 +145,19 @@ def excelAssosiationRule(request):
             'valuePredict' : valuePredict
         }
         pred.append(dataPred)
+        dataArrPredAsso.append(dataPred)
     predContext["pred"] = pred
     return render(request, 'associationexcel.html',predContext)
+
+@allowed_executive(allowed_roles=dataUserArray)
+def export_csv_association(request):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename=Data-Prediksi-Association'+'-'+str(datetime.now())+'.csv'
+
+    writer = csv.writer(response)
+    dataHeader = ['Data Produk Pertama','Data Prediksi Pembelian Produk Kedua','Nilai Probabilitas']
+    writer.writerow(dataHeader)
+    for data in dataArrPredAsso:
+        writer.writerow([data['dataProduct'],data['dataPredict'],data['valuePredict']])
+
+    return response

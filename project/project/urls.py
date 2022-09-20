@@ -1,16 +1,34 @@
 from django.contrib import admin
 from django.urls import path
-from myapp import views
+from admindata import views
+from authentification import views as authviews
+from superuser import views as sviews
+from executive import views as eviews
 from association import views as aviews
 from forecasting import views as fviews
  
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.home, name='home'),
-    path('signin/',views.signin, name='signin'),
-    path('signout/',views.signout, name='signout'),
-    path('signup/',views.signup, name='signup'),
-    path('profile/',views.profile, name='profile'),
+    path('signin/',authviews.signin, name='signin'),
+    path('signout/',authviews.signout, name='signout'),
+    path('signup/',authviews.signup, name='signup'),
+
+    # Access Denied
+    path('accessdenied/', authviews.accessdenied, name='accessdenied'),
+
+    # Superuser
+    path('superuser/', sviews.dataUser, name='superuser'),
+    path('editUser/<int:id>',sviews.editUser),
+
+    # Executive
+    path('executive/', eviews.dashboardExecutive, name='dashboardExecutive'),
+    path('password-change-executive/', eviews.changePassword, name='changePassword'),
+    path('editProfileExecutive/', eviews.editProfileExecutive, name='editProfileExecutive'),
+
+    # Admin
+    path('admindashboard/',views.adminDashboard, name='adminDashboard'),
+    path('password-change-admin/', views.changePassword, name='changePassword'),
+    path('editProfileAdmin/', views.editProfileAdmin, name='editProfileAdmin'),
 
     # Data Barang
     path('dataBarang/',views.dataBarang, name='dataBarang'),
@@ -35,21 +53,25 @@ urlpatterns = [
     path('tambahPembelian/',views.tambahPembelian, name='tambahPembelian'),
     path('editPembelian/<int:id>',views.editPembelian),
     path('hapusPembelian/<int:id>',views.hapusPembelian),
+    path('export-csv-pembelian',views.export_data_pembelian_csv,name='export-csv-pembelian'),
 
     # Data Penjualan
     path('dataPenjualan/',views.dataPenjualan, name='dataPenjualan'),
     path('tambahPenjualan/',views.tambahPenjualan, name='tambahPenjualan'),
     path('editPenjualan/<int:id>',views.editPenjualan),
     path('hapusPenjualan/<int:id>',views.hapusPenjualan),
+    path('export-csv-penjualan',views.export_data_penjualan_csv,name='export-csv-penjualan'),
 
     # Association Rule
     path('associationRule/',aviews.assosiationRule, name='associationRule'),
     path('excelAssociationRule/',aviews.excelAssosiationRule, name='excelAssociationRule'),
     path('predictAssociationRule/',aviews.predictAssociationRule, name='predictAssociationRule'),
+    path('export-csv-association/',aviews.export_csv_association, name='export-csv-association'),
  
     # Forecasting Rule
     path('forecastingRule/',fviews.forecastingRule, name='forecastingRule'),
     path('excelForecastingRule/',fviews.excelForecastingRule, name='excelForecastingRule'),
     path('predictForecastingRule/',fviews.predictForecastingRule, name='predictForecastingRule'),
+    path('export-csv-forecasting/',fviews.export_csv_forecasting, name='export-csv-forecasting'),
 
 ]

@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "baseexecutive.html" %}
 {% block konten %}
 {% load static %} 
 <main>
@@ -12,13 +12,6 @@
                             Forecasting System Data
                         </h1>
                         <div class="page-header-subtitle">Example dashboard overview and content summary</div>
-                    </div>
-                    <div class="col-12 col-xl-auto mt-4">
-                        <button class="btn btn-white btn-sm line-height-normal p-3" id="reportrange">
-                            <i class="mr-2 text-primary" data-feather="calendar"></i>
-                            <span></span>
-                            <i class="ml-1" data-feather="chevron-down"></i>
-                        </button>
                     </div>
                 </div>
             </div>
@@ -51,6 +44,9 @@
                 <div class="card">
                     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.js"></script>
                     <div class="card-header">Forecasting Visualization</div>
+                    <div class="card-header">
+                        <a class="btn btn-success" href="{% url 'export-csv-forecasting' %}">Export CSV</a>
+                    </div>
                     <div class="card-body">
                         <div class="chart-area"><canvas id="myAreaChart2" width="100%" ></canvas></div>
                     </div>
