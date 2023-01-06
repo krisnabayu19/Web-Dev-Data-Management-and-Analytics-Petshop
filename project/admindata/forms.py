@@ -4,7 +4,7 @@ from .models import Barang,Pelanggan,Supplier,Pelanggan,Pembelian,Penjualan,User
 class UserForm(forms.ModelForm):
     class Meta:
         model = UserModel
-        fields = "__all__"
+        fields = ['id','full_name','first_name','last_name','email','image']
 
 class BarangForm(forms.ModelForm):
     class Meta:

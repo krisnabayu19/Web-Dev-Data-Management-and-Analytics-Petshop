@@ -49,9 +49,11 @@
                     <table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
                         <thead>
                             <tr>
-                                <th>Data Produk Pertama</th>
+                                <th>Data Pembelian Produk Pertama</th>
                                 <th>Data Prediksi Pembelian Produk Kedua</th>
-                                <th>Nilai Probabilitas</th>
+                                <th>Nilai Minimum Confidence</th>
+                                <th>Nilai Minimum Support</th>
+                                <th>Hasil Nilai Confidence</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -59,6 +61,8 @@
                             <tr>
                             <td>{{data.dataProduct}}</td>
                             <td>{{data.dataPredict}}</td>
+                            <td>{{data.minConf}}</td>
+                            <td>{{data.minSupp}}</td>
                             <td>{{data.valuePredict}}</td>
                            </tr>
                            {% endfor %} 

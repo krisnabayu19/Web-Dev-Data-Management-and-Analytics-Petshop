@@ -55,13 +55,6 @@
                             <option value="0" {% if 0 == dataU.verified %} selected{% endif %}>Tidak Verifikasi</option>
                         </select>
                     </div>
-                     <div class="form-group">
-                        <label class="small mb-1" for="inputStatusStaff">Status Anggota</label> 
-                        <select class="form-control" id="is_staff" name="is_staff">
-                            <option value="1" {% if 1 == dataU.is_staff %} selected{% endif %}>Iya Anggota</option>
-                            <option value="0" {% if 0 == dataU.is_staff %} selected{% endif %}>Tidak Anggota</option>
-                        </select>
-                    </div>
                     <div class="form-group">
                         <label class="small mb-1" for="inputStatusActive">Status Active</label>
                         <select class="form-control" id="is_active" name="is_active">
@@ -70,16 +63,15 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label class="small mb-1" for="inputRole">Role</label>
-                        <select class="form-control" id="role" name="role">
-                            <option value="executive" {% if "executive" == dataU.role %} selected{% endif %}>Executive</option>
-                            <option value="admin" {% if "admin" == dataU.role %} selected{% endif %}>Admin</option>
-                            <option value="finance" {% if "finance" == dataU.role %} selected{% endif %}>Finance</option>
+                        <label class="small mb-1" for="inputStatusStaff">Role</label> 
+                        <select class="form-control" id="is_staff" name="is_staff">
+                            <option value="1" {% if 1 == dataU.is_staff %} selected{% endif %}>Admin</option>
+                            <option value="0" {% if 0 == dataU.is_staff %} selected{% endif %}>Executive</option>
                         </select>
                     </div>
-                     <div class="form-group d-flex align-items-center justify-content-between mt-4 mb-0">
+                    <div class="form-group d-flex align-items-center justify-content-between mt-4 mb-0">
                          <input class="btn btn-primary" type="submit" value="Simpan">
-                     </div>
+                    </div>
                  </form>
              </div>
         </div>

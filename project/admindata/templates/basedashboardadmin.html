@@ -1,6 +1,6 @@
 {% load static %} 
 {% block content %}
-   {% if user.is_authenticated and user.is_staff %}
+   {% if user.is_authenticated and user.is_staff == 1  %}
    <!DOCTYPE html>
    <html lang="en">
        <head>
@@ -24,10 +24,18 @@
 
                <ul class="navbar-nav align-items-center ml-auto">
                 <li class="nav-item dropdown no-caret mr-2 dropdown-user">
-                    <a class="btn btn-icon btn-transparent-dark dropdown-toggle" id="navbarDropdownUserImage" href="javascript:void(0);" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><img class="img-fluid" src="{% static 'dist/assets/img/freepik/profiles/profile-1.png' %}" /></a>
+                    {% if dataU.image %}
+                    <a class="btn btn-icon btn-transparent-dark dropdown-toggle" id="navbarDropdownUserImage" href="javascript:void(0);" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><img class="img-fluid" src="{{dataU.image.url}}" /></a>
+                    {% else %}
+                    <a class="btn btn-icon btn-transparent-dark dropdown-toggle" id="navbarDropdownUserImage" href="javascript:void(0);" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><img class="img-fluid" src="{% static 'dist/assets/img/freepik/profiles/user.png' %}" /></a>
+                    {% endif %}
                     <div class="dropdown-menu dropdown-menu-right border-0 shadow animated--fade-in-up" aria-labelledby="navbarDropdownUserImage">
                         <h6 class="dropdown-header d-flex align-items-center">
-                            <img class="dropdown-user-img" src="{% static 'dist/assets/img/freepik/profiles/profile-1.png' %}" />
+                            {% if dataU.image %}
+                            <img class="dropdown-user-img" src="{{ dataU.image.url }}"/>
+                            {% else %}
+                            <img class="dropdown-user-img" src="{% static 'dist/assets/img/freepik/profiles/user.png' %}" />
+                            {% endif %}
                             <div class="dropdown-user-details">
                                 <div class="dropdown-user-details-name">{{ user.username }}</div>
                                 <div class="dropdown-user-details-email">{{ user.email }}</div>
@@ -47,12 +55,7 @@
                             Logout
                         </a>
                     </div>
-                </li>
-
-
-
-
-                   
+                </li> 
                </ul>
            </nav>
            <div id="layoutSidenav">
@@ -65,7 +68,6 @@
                                         <div class="nav-link-icon"><i data-feather="home"></i></div>
                                         Dashboard
                                     </a>
-
                                     <div class="sidenav-menu-heading">Master Data</div>
                                     <a class="nav-link collapsed" href="javascript:void(0);" data-toggle="collapse" data-target="#collapseDashboards" aria-expanded="false" aria-controls="collapseDashboards">
                                         <div class="nav-link-icon"><i data-feather="activity"></i></div>
@@ -95,8 +97,7 @@
                                     <a class="nav-link" href="{% url 'dataPenjualan' %}">
                                         <div class="nav-link-icon"><i data-feather="package"></i></div>
                                         Data Penjualan
-                                    </a>
-                                    
+                                    </a>                                   
                                 </div>
                             </div>
                             <div class="sidenav-footer">
@@ -163,8 +164,6 @@
                                 <div class="text-center mt-4">
                                     <img class="img-fluid p-4" src="{% static 'dist/assets/img/freepik/401-error-unauthorized-pana.svg' %}" alt="" />
                                     <p class="lead">Access to this resource is denied.</p>
-                                    <a href="/signin" class="btn btn-primary">Sign In</a> 
-                                    <!-- <a href="/signup" class="btn btn-success">Sign Up</a> -->
                                 </div>
                             </div>
                         </div>

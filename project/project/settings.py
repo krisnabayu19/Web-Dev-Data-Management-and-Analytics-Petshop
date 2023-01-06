@@ -61,7 +61,7 @@ ROOT_URLCONF = 'project.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR,'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -79,13 +79,13 @@ WSGI_APPLICATION = 'project.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
-
+# Mengatur akses database
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'db_petshop',
         'USER': 'root',
-        'PASSWORD': '',
+        'PASSWORD': 'Bayu123!@#',
         'HOST': 'localhost',
         'PORT': '3306'
     }
@@ -145,3 +145,6 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS =[
     os.path.join(BASE_DIR, "static")
 ]
+
+MEDIA_URL = '/images/'
+MEDIA_ROOT =  os.path.join(BASE_DIR, 'media')

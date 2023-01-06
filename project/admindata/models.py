@@ -1,13 +1,5 @@
 from django.db import models
 
-class Role(models.Model):
-    username = models.CharField(max_length=200, blank=True, null=True)
-    role = models.CharField(max_length=200, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'auth_user'
-
 class Barang(models.Model):
     id_barang = models.AutoField(primary_key=True)
     nama_barang = models.CharField(max_length=200, blank=True, null=True)
@@ -38,7 +30,6 @@ class Pelanggan(models.Model):
     alamat_pelanggan = models.CharField(max_length=200, blank=True, null=True)
     admin_id = models.IntegerField(blank=True, null=True)
     
-
     class Meta:
         managed = False
         db_table = 'tb_pelanggan'
@@ -52,7 +43,6 @@ class Pembelian(models.Model):
     created_at = models.DateTimeField(blank=True, null=True)
     expired_at = models.DateTimeField(blank=True, null=True)
     admin_id = models.IntegerField(blank=True, null=True)
-
 
     class Meta:
         managed = False
@@ -78,6 +68,7 @@ class UserModel(models.Model):
     first_name = models.CharField(max_length=200, blank=True, null=True)
     last_name = models.CharField(max_length=200, blank=True, null=True)
     email = models.CharField(max_length=200, blank=True, null=True)
+    image = models.ImageField(upload_to='images/', null=True, blank=True)
 
     class Meta:
         managed = False

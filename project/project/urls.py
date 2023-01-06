@@ -6,9 +6,13 @@ from superuser import views as sviews
 from executive import views as eviews
 from association import views as aviews
 from forecasting import views as fviews
+
+from django.conf import settings
+from django.conf.urls.static import static
  
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('',sviews.profileCompany, name='profilecompany'),
     path('signin/',authviews.signin, name='signin'),
     path('signout/',authviews.signout, name='signout'),
     path('signup/',authviews.signup, name='signup'),
@@ -71,7 +75,15 @@ urlpatterns = [
     # Forecasting Rule
     path('forecastingRule/',fviews.forecastingRule, name='forecastingRule'),
     path('excelForecastingRule/',fviews.excelForecastingRule, name='excelForecastingRule'),
+    path('excelPredictForecastingRule/',fviews.excelPredictForecastingRule, name='excelPredictForecastingRule'),
     path('predictForecastingRule/',fviews.predictForecastingRule, name='predictForecastingRule'),
     path('export-csv-forecasting/',fviews.export_csv_forecasting, name='export-csv-forecasting'),
 
-]
+
+]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    
+handler404 = 'authentification.views.error_404_view'

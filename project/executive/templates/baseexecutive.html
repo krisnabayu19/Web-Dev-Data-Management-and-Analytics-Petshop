@@ -1,6 +1,6 @@
 {% load static %} 
 {% block content %}
-   {% if user.is_authenticated and user.is_staff %}
+   {% if user.is_authenticated and user.is_staff == 0%}
    <!DOCTYPE html>
    <html lang="en">
        <head>
@@ -28,6 +28,97 @@
                 });
             });
             </script>
+            
+            <style>
+                body {font-family: Arial, Helvetica, sans-serif;}
+                
+                #myImg {
+                  border-radius: 5px;
+                  cursor: pointer;
+                  transition: 0.3s;
+                }
+                
+                #myImg:hover {opacity: 0.7;}
+                
+                /* The Modal (background) */
+                .modal {
+                  display: none; /* Hidden by default */
+                  position: fixed; /* Stay in place */
+                  z-index: 1; /* Sit on top */
+                  padding-top: 100px; /* Location of the box */
+                  left: 0;
+                  top: 0;
+                  width: 100%; /* Full width */
+                  height: 100%; /* Full height */
+                  overflow: auto; /* Enable scroll if needed */
+                  background-color: rgb(0,0,0); /* Fallback color */
+                  background-color: rgba(0,0,0,0.9); /* Black w/ opacity */
+                }
+                
+                /* Modal Content (image) */
+                .modal-content {
+                  margin: auto;
+                  display: block;
+                  width: 80%;
+                  max-width: 900px;
+                }
+                
+                /* Caption of Modal Image */
+                #caption {
+                  margin: auto;
+                  display: block;
+                  width: 80%;
+                  max-width: 700px;
+                  text-align: center;
+                  color: #ccc;
+                  padding: 10px 0;
+                  height: 150px;
+                }
+                
+                /* Add Animation */
+                .modal-content, #caption {  
+                  -webkit-animation-name: zoom;
+                  -webkit-animation-duration: 0.6s;
+                  animation-name: zoom;
+                  animation-duration: 0.6s;
+                }
+                
+                @-webkit-keyframes zoom {
+                  from {-webkit-transform:scale(0)} 
+                  to {-webkit-transform:scale(1)}
+                }
+                
+                @keyframes zoom {
+                  from {transform:scale(0)} 
+                  to {transform:scale(1)}
+                }
+                
+                /* The Close Button */
+                .close {
+                  position: absolute;
+                  top: 100px;
+                  right: 250px;
+                  color: #f1f1f1;
+                  font-size: 40px;
+                  font-weight: bold;
+                  transition: 0.3s;
+                }
+                
+                .close:hover,
+                .close:focus {
+                  color: #bbb;
+                  text-decoration: none;
+                  cursor: pointer;
+                }
+                
+                /* 100% Image Width on Smaller Screens */
+                @media only screen and (max-width: 700px){
+                  .modal-content {
+                    width: 100%;
+                  }
+                }
+            </style>
+
        </head>
        <body class="nav-fixed">
            <nav class="topnav navbar navbar-expand shadow navbar-light bg-white" id="sidenavAccordion">
@@ -50,11 +141,19 @@
                    </li>
 
 
-                   <li class="nav-item dropdown no-caret mr-2 dropdown-user">
-                    <a class="btn btn-icon btn-transparent-dark dropdown-toggle" id="navbarDropdownUserImage" href="javascript:void(0);" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><img class="img-fluid" src="{% static 'dist/assets/img/freepik/profiles/profile-1.png' %}" /></a>
+                <li class="nav-item dropdown no-caret mr-2 dropdown-user">
+                    {% if dataU.image %}
+                    <a class="btn btn-icon btn-transparent-dark dropdown-toggle" id="navbarDropdownUserImage" href="javascript:void(0);" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><img class="img-fluid" src="{{dataU.image.url}}" /></a>
+                    {% else %}
+                    <a class="btn btn-icon btn-transparent-dark dropdown-toggle" id="navbarDropdownUserImage" href="javascript:void(0);" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><img class="img-fluid" src="{% static 'dist/assets/img/freepik/profiles/user.png' %}" /></a>
+                    {% endif %}
                     <div class="dropdown-menu dropdown-menu-right border-0 shadow animated--fade-in-up" aria-labelledby="navbarDropdownUserImage">
                         <h6 class="dropdown-header d-flex align-items-center">
-                            <img class="dropdown-user-img" src="{% static 'dist/assets/img/freepik/profiles/profile-1.png' %}" />
+                            {% if dataU.image %}
+                            <img class="dropdown-user-img" src="{{ dataU.image.url }}"/>
+                            {% else %}
+                            <img class="dropdown-user-img" src="{% static 'dist/assets/img/freepik/profiles/user.png' %}" />
+                            {% endif %}
                             <div class="dropdown-user-details">
                                 <div class="dropdown-user-details-name">{{ user.username }}</div>
                                 <div class="dropdown-user-details-email">{{ user.email }}</div>
@@ -85,7 +184,7 @@
                                     <div class="sidenav-menu-heading">Dashboard</div>
                                     <a class="nav-link" href="{% url 'dashboardExecutive' %}">
                                         <div class="nav-link-icon"><i data-feather="home"></i></div>
-                                        Dashboard Executive
+                                        Dashboard
                                     </a>
 
                                     <div class="sidenav-menu-heading">Analytics</div>
@@ -96,9 +195,9 @@
                                     </a>
                                     <div class="collapse" id="collapseAssociation" data-parent="#accordionSidenav">
                                         <nav class="sidenav-menu-nested nav accordion" id="accordionSidenavPages">
-                                            <a class="nav-link" href="{% url 'associationRule' %}">
+                                            <!-- <a class="nav-link" href="{% url 'associationRule' %}">
                                                 Association System Data
-                                            </a>
+                                            </a> -->
                                             <a class="nav-link" href="{% url 'excelAssociationRule' %}">
                                                 Association Excel Data
                                             </a>
@@ -112,9 +211,9 @@
                                     </a>
                                     <div class="collapse" id="collapseForecasting" data-parent="#accordionSidenav">
                                         <nav class="sidenav-menu-nested nav accordion" id="accordionSidenavPages">
-                                            <a class="nav-link" href="{% url 'forecastingRule' %}">
+                                            <!-- <a class="nav-link" href="{% url 'forecastingRule' %}">
                                                 Forecasting System Data
-                                            </a>
+                                            </a> -->
                                             <a class="nav-link" href="{% url 'excelForecastingRule' %}">
                                                 Forecasting Excel Data
                                             </a>
@@ -184,8 +283,6 @@
                                 <div class="text-center mt-4">
                                     <img class="img-fluid p-4" src="{% static 'dist/assets/img/freepik/401-error-unauthorized-pana.svg' %}" alt="" />
                                     <p class="lead">Access to this resource is denied.</p>
-                                    <a href="/signin" class="btn btn-primary">Sign In</a> 
-                                    <!-- <a href="/signup" class="btn btn-success">Sign Up</a> -->
                                 </div>
                             </div>
                         </div>

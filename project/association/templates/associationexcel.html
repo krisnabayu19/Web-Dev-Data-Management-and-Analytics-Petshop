@@ -37,12 +37,15 @@
             </div>
         </div>
         <!-- Example Colored Cards for Dashboard Demo-->
-
+        {% if 0 in product %}
+        {% else %}
         <div class="card mb-4">
+        
             <div class="card-header">Data Prediksi Penjualan Produk </div>
             <div class="card-header">
                 <a class="btn btn-success" href="{% url 'export-csv-association' %}">Export CSV</a>
             </div>
+
             <div class="card-body">
                 <div class="datatable">
                     <table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
@@ -50,7 +53,9 @@
                             <tr>
                                 <th>Data Produk Pertama</th>
                                 <th>Data Prediksi Pembelian Produk Kedua</th>
-                                <th>Nilai Probabilitas</th>
+                                <th>Nilai Minimum Confidence</th>
+                                <th>Nilai Minimum Support</th>
+                                <th>Hasil Nilai Confidence</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -58,6 +63,8 @@
                             <tr>
                             <td>{{data.dataProduct}}</td>
                             <td>{{data.dataPredict}}</td>
+                            <td>{{data.minConf}}</td>
+                            <td>{{data.minSupp}}</td>
                             <td>{{data.valuePredict}}</td>
                            </tr>
                            {% endfor %} 
@@ -66,10 +73,42 @@
                 </div>
             </div>
         </div>
+        {% endif %}
 
         <!-- Example DataTable for Dashboard Demo-->
         <div class="card mb-4">
             <div class="card-header">Data Input Prediksi Penjualan Produk </div>
+            <div class="card-header">
+                <img id="myImg" src="{% static 'dist/assets/img/freepik/format-data-association.png' %}" alt="Format Data Excel" style="width:100%;max-width:300px">
+                <div id="myModal" class="modal">
+                <span class="close">&times;</span>
+                <img class="modal-content" id="img01">
+                <div id="caption"></div>
+                </div>
+            </div>
+
+            <script>
+                // Get the modal
+                var modal = document.getElementById("myModal");
+                
+                // Get the image and insert it inside the modal - use its "alt" text as a caption
+                var img = document.getElementById("myImg");
+                var modalImg = document.getElementById("img01");
+                var captionText = document.getElementById("caption");
+                img.onclick = function(){
+                  modal.style.display = "block";
+                  modalImg.src = this.src;
+                  captionText.innerHTML = this.alt;
+                }
+                
+                // Get the <span> element that closes the modal
+                var span = document.getElementsByClassName("close")[0];
+                
+                // When the user clicks on <span> (x), close the modal
+                span.onclick = function() { 
+                  modal.style.display = "none";
+                }
+            </script>
             <div class="card-body">
                 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
                 <form action="" method="POST" enctype="multipart/form-data">
@@ -78,14 +117,14 @@
                         <input class="form-control mb-3" type="file" id="file1" name="file">
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label class="small mb-1" for="inputMinConf">Min. Confidence</label>
-                                <input class="form-control py-4" id="inputMinConf" name="inputMinConf" type="number" step="0.01" placeholder="Minimum Confidence" value=""/>
+                                <label class="small mb-1" for="inputMinSupp">Min. Support</label>
+                                <input class="form-control py-4" id="inputMinSupp" name="inputMinSupp" type="number" step="0.01" placeholder="Minimum Support" value="" />
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label class="small mb-1" for="inputMinSupp">Min. Support</label>
-                                <input class="form-control py-4" id="inputMinSupp" name="inputMinSupp" type="number" step="0.01" placeholder="Minimum Support" value="" />
+                                <label class="small mb-1" for="inputMinConf">Min. Confidence</label>
+                                <input class="form-control py-4" id="inputMinConf" name="inputMinConf" type="number" step="0.01" placeholder="Minimum Confidence" value=""/>
                             </div>
                         </div>
                     </div>

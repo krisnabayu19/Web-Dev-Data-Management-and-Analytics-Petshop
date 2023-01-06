@@ -1,6 +1,9 @@
 from django.db import models
 
+# Model untuk memanggil data pada tb_barang
 class Barang(models.Model):
+
+    # Data yang diambil pada tabel "tb_barang" yaitu data "id_barang", "nama_barang", "jenis_barang", "kategori_barang" dan "harga_barang"
     id_barang = models.AutoField(primary_key=True)
     nama_barang = models.CharField(max_length=200, blank=True, null=True)
     jenis_barang = models.CharField(max_length=200, blank=True, null=True)
@@ -11,7 +14,10 @@ class Barang(models.Model):
         managed = False
         db_table = 'tb_barang'
 
+# Model untuk memanggil data pada tb_pelanggan
 class Pelanggan(models.Model):
+
+    # Data yang diambil pada tabel "tb_pelanggan" yaitu data "id_pelanggan", "nama_pelanggan", "gender_pelanggan", dan "alamat_pelanggan"
     id_pelanggan = models.AutoField(primary_key=True)
     nama_pelanggan = models.CharField(max_length=200, blank=True, null=True)
     gender_pelanggan = models.CharField(max_length=200, blank=True, null=True)

@@ -5,30 +5,29 @@ from admindata.models import Barang, Pembelian, Penjualan,Supplier,Pelanggan
 from authentification.decorators import allowed_executive
 from .models import UserModel
 from .forms import UserForm
-from authentification.views import dataUserArray
+from authentification.views import dataUserExecutive
 from django.db.models import Sum
 
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 
+
+
 # Create your views here.
-@allowed_executive(allowed_roles=dataUserArray)
+# Fungsi untuk dashboard user executive
+@allowed_executive(allowed_roles=dataUserExecutive)
 def dashboardExecutive(request):
     context = {}
 
     dataPenj = Penjualan.objects.filter().values()
-    dataPemb = Pembelian.objects.all()
-    dataB = Barang.objects.all()
-    dataS = Supplier.objects.all()
-    dataP = Pelanggan.objects.all()
-
     sumDataPenj = Penjualan.objects.aggregate(Sum('total'))
-
     countDataP = Pelanggan.objects.filter().count()
     countDataB = Barang.objects.filter().count()
     countDataS = Supplier.objects.filter().count()
     countDataPenj = Penjualan.objects.filter().count()
     countDataPemb = Pembelian.objects.filter().count()
+    current_user = request.user
+    dataU = UserModel.objects.get(id=current_user.id)
 
     dataMonth = []
     dataTotalPenj = []
@@ -47,10 +46,8 @@ def dashboardExecutive(request):
         'countDataPemb' : countDataPemb,
         'dataMonth' : dataMonth,
         'dataTotalPenj' : dataTotalPenj,
+        'dataU':dataU,
     }
-    print(dataMonth)
-    print(dataTotalPenj)
-    print(dataJumlahPenj)
 
     context["dataMonth"] = dataMonth
     context["dataTotalPenj"] = dataTotalPenj
@@ -59,9 +56,11 @@ def dashboardExecutive(request):
     context["countDataPenj"] = countDataPenj
     context["countDataP"] = countDataP
     context["countDataS"] = countDataS
+    context["dataU"] = dataU
     return render(request, 'executive.html',context)
 
-@allowed_executive(allowed_roles=dataUserArray)
+# Fungsi untuk mengganti password user executive
+@allowed_executive(allowed_roles=dataUserExecutive)
 def changePassword(request):
     current_user = request.user
     strUsername = str(current_user.username)
@@ -70,10 +69,11 @@ def changePassword(request):
         u = User.objects.get(username=strUsername)
         u.set_password(str(newPassword))
         u.save()
-        return redirect('/executive')
+        return redirect('/signin')
     return render(request, 'password_change.html')
 
-@allowed_executive(allowed_roles=dataUserArray)
+# Fungsi untuk memperbaharui data profil user executive
+@allowed_executive(allowed_roles=dataUserExecutive)
 def editProfileExecutive(request):
     current_user = request.user
     dataU = UserModel.objects.get(id=current_user.id)
@@ -81,7 +81,7 @@ def editProfileExecutive(request):
         'dataU' : dataU,
     }
     if request.method == 'POST':
-        form = UserForm(request.POST, instance = dataU)
+        form = UserForm(request.POST,request.FILES,instance = dataU)
         current_user = request.user
         if form.is_valid():
             form.save()

@@ -1,5 +1,7 @@
 import csv
+import os
 from fileinput import filename
+from urllib import request
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserCreationForm
@@ -10,31 +12,42 @@ from django.shortcuts import HttpResponseRedirect
 from django.core.cache import cache
 from django.views.decorators.cache import cache_control
 
-from .models import Barang, Pembelian, Penjualan,Supplier,Pelanggan,UserModel
+from .models import Barang,Pembelian,Penjualan,Supplier,Pelanggan,UserModel
 from datetime import datetime
 from .forms import BarangForm,SupplierForm,PelangganForm,PembelianForm,PenjualanForm,UserForm
 import pandas as pd
 
-from authentification.decorators import allowed_admin, allowed_executive
+from authentification.decorators import allowed_admin
 from django.contrib.auth.decorators import login_required
 from django.db.models import Sum
-from authentification.views import dataUserArray
+from authentification.views import dataUserAdmin
 from django.contrib.auth.models import User
 
 
-@allowed_admin(allowed_roles=dataUserArray)
+@allowed_admin(allowed_roles=dataUserAdmin)
 def adminDashboard(request):
-    return render(request, 'dashboardadmin.html')
+    current_user = request.user
+    dataU = UserModel.objects.get(id=current_user.id)
+    data = {
+        'dataU' : dataU,
+    }
+    return render(request, 'dashboardadmin.html',data)
 
 
 # CRUD Data Barang
-@allowed_admin(allowed_roles=dataUserArray)
+@allowed_admin(allowed_roles=dataUserAdmin)
 def dataBarang(request):
     dataB= Barang.objects.all()
-    return render(request, 'Barang/barang.html',{'dataB':dataB})
+    current_user = request.user
+    dataU = UserModel.objects.get(id=current_user.id)
+    data = {
+        'dataU' : dataU,
+        'dataB':dataB,
+    }
+    return render(request, 'Barang/barang.html',data)
 
 
-@allowed_admin(allowed_roles=dataUserArray)
+@allowed_admin(allowed_roles=dataUserAdmin)
 def tambahBarang(request):
     if request.method == 'POST':
         form = BarangForm(request.POST)
@@ -48,7 +61,7 @@ def tambahBarang(request):
     return render(request, 'Barang/tambahbarang.html')
 
 
-@allowed_admin(allowed_roles=dataUserArray)
+@allowed_admin(allowed_roles=dataUserAdmin)
 def editBarang(request, id):
     dataB = Barang.objects.get(id_barang=id)
     current_user = request.user
@@ -63,19 +76,25 @@ def editBarang(request, id):
     return render(request,"Barang/editbarang.html",{'dataB':dataB})
 
 
-@allowed_admin(allowed_roles=dataUserArray)
+@allowed_admin(allowed_roles=dataUserAdmin)
 def hapusBarang(request, id):
     dataB = Barang.objects.get(id_barang=id)
     dataB.delete()
     return redirect("/dataBarang")
 
 # CRUD Supplier
-@allowed_admin(allowed_roles=dataUserArray)
+@allowed_admin(allowed_roles=dataUserAdmin)
 def dataSupplier(request):
     dataS= Supplier.objects.all()
-    return render(request, 'Supplier/supplier.html',{'dataS':dataS})
+    current_user = request.user
+    dataU = UserModel.objects.get(id=current_user.id)
+    data = {
+        'dataU' : dataU,
+        'dataS':dataS,
+    }
+    return render(request, 'Supplier/supplier.html',data)
 
-@allowed_admin(allowed_roles=dataUserArray)
+@allowed_admin(allowed_roles=dataUserAdmin)
 def tambahSupplier(request):
     if request.method == 'POST':
         form = SupplierForm(request.POST)
@@ -88,7 +107,7 @@ def tambahSupplier(request):
         pass
     return render(request, 'Supplier/tambahsupplier.html')
 
-@allowed_admin(allowed_roles=dataUserArray)
+@allowed_admin(allowed_roles=dataUserAdmin)
 def editSupplier(request, id):
     dataS = Supplier.objects.get(id_supplier=id)
     current_user = request.user
@@ -102,19 +121,25 @@ def editSupplier(request, id):
         pass
     return render(request,"Supplier/editsupplier.html",{'dataS':dataS})
 
-@allowed_admin(allowed_roles=dataUserArray)
+@allowed_admin(allowed_roles=dataUserAdmin)
 def hapusSupplier(request, id):
     dataS = Supplier.objects.get(id_supplier=id)
     dataS.delete()
     return redirect("/dataSupplier")
 
 # CRUD Pelanggan
-@allowed_admin(allowed_roles=dataUserArray)
+@allowed_admin(allowed_roles=dataUserAdmin)
 def dataPelanggan(request):
     dataP= Pelanggan.objects.all()
-    return render(request, 'Pelanggan/pelanggan.html',{'dataP':dataP})
+    current_user = request.user
+    dataU = UserModel.objects.get(id=current_user.id)
+    data = {
+        'dataU' : dataU,
+        'dataP':dataP,
+    }
+    return render(request, 'Pelanggan/pelanggan.html',data)
 
-@allowed_admin(allowed_roles=dataUserArray)
+@allowed_admin(allowed_roles=dataUserAdmin)
 def tambahPelanggan(request):
     if request.method == 'POST':
         form = PelangganForm(request.POST)
@@ -127,7 +152,7 @@ def tambahPelanggan(request):
         pass
     return render(request, 'Pelanggan/tambahpelanggan.html')
 
-@allowed_admin(allowed_roles=dataUserArray)
+@allowed_admin(allowed_roles=dataUserAdmin)
 def editPelanggan(request, id):
     dataP = Pelanggan.objects.get(id_pelanggan=id)
     if request.method == 'POST':
@@ -141,7 +166,7 @@ def editPelanggan(request, id):
         pass
     return render(request,"Pelanggan/editpelanggan.html",{'dataP':dataP})
 
-@allowed_admin(allowed_roles=dataUserArray)
+@allowed_admin(allowed_roles=dataUserAdmin)
 def hapusPelanggan(request, id):
     dataP = Pelanggan.objects.get(id_pelanggan=id)
     dataP.delete()
@@ -149,12 +174,18 @@ def hapusPelanggan(request, id):
 
 
 # CRUD Pembelian Barang
-@allowed_admin(allowed_roles=dataUserArray)
+@allowed_admin(allowed_roles=dataUserAdmin)
 def dataPembelian(request):
     dataPemb = Pembelian.objects.all()
-    return render(request, 'Pembelian/pembelian.html',{'dataPemb':dataPemb})
+    current_user = request.user
+    dataU = UserModel.objects.get(id=current_user.id)
+    data = {
+        'dataU' : dataU,
+        'dataPemb':dataPemb,
+    }
+    return render(request, 'Pembelian/pembelian.html',data)
 
-@allowed_admin(allowed_roles=dataUserArray)
+@allowed_admin(allowed_roles=dataUserAdmin)
 def tambahPembelian(request):
     dataB = Barang.objects.all()
     dataS = Supplier.objects.all()
@@ -187,7 +218,7 @@ def tambahPembelian(request):
         pass
     return render(request, 'Pembelian/tambahpembelian.html',data)
 
-@allowed_admin(allowed_roles=dataUserArray)
+@allowed_admin(allowed_roles=dataUserAdmin)
 def editPembelian(request, id):
     dataB = Barang.objects.all()
     dataS = Supplier.objects.all()
@@ -223,7 +254,7 @@ def editPembelian(request, id):
         pass
     return render(request,"Pembelian/editpembelian.html",data)
 
-@allowed_admin(allowed_roles=dataUserArray)
+@allowed_admin(allowed_roles=dataUserAdmin)
 def hapusPembelian(request, id):
     dataPemb = Pembelian.objects.get(id_pembelian=id)
     dataPemb.delete()
@@ -251,18 +282,25 @@ def export_data_pembelian_csv(request):
 
 
 # CRUD Penjualan
-@allowed_admin(allowed_roles=dataUserArray)
+@allowed_admin(allowed_roles=dataUserAdmin)
 def dataPenjualan(request):
     dataPenj = Penjualan.objects.all()
-    return render(request, 'Penjualan/penjualan.html',{'dataPenj':dataPenj})
+    current_user = request.user
+    dataU = UserModel.objects.get(id=current_user.id)
+    data = {
+        'dataU' : dataU,
+        'dataPenj':dataPenj,
+    }
+    return render(request, 'Penjualan/penjualan.html',data)
 
-@allowed_admin(allowed_roles=dataUserArray)
+@allowed_admin(allowed_roles=dataUserAdmin)
 def tambahPenjualan(request):
     dataB = Barang.objects.all()
     dataP = Pelanggan.objects.all()
     dataHarga = Barang.objects.values_list('harga_barang')
     numLastTransaksi = 0
-    with open('D:\Data-Mining-Project-Dwik\project\last-data-transaksi.csv', 'r', encoding='utf-8') as last_transaksi:
+    
+    with open('/Users/inyomankrisnabayu/Desktop/Petshop/Web-Dev-Data-Management-and-Analytics-Petshop/project/last-data-transaksi.csv', 'r', encoding='utf-8') as last_transaksi:
         for i in last_transaksi:
             numLastTransaksi = numLastTransaksi + int(i)
     data = {
@@ -323,7 +361,7 @@ def tambahPenjualan(request):
         pass
     return render(request, 'Penjualan/tambahpenjualan.html',data)
 
-@allowed_admin(allowed_roles=dataUserArray)
+@allowed_admin(allowed_roles=dataUserAdmin)
 def editPenjualan(request, id):
     dataB = Barang.objects.all()
     dataP = Pelanggan.objects.all()
@@ -359,7 +397,7 @@ def editPenjualan(request, id):
         pass
     return render(request,"Penjualan/editpenjualan.html",data)
 
-@allowed_admin(allowed_roles=dataUserArray)
+@allowed_admin(allowed_roles=dataUserAdmin)
 def hapusPenjualan(request, id):
     dataPenj = Penjualan.objects.get(id_penjualan=id)
     dataPenj.delete()
@@ -386,7 +424,7 @@ def export_data_penjualan_csv(request):
     return response
 
 
-@allowed_admin(allowed_roles=dataUserArray)
+@allowed_admin(allowed_roles=dataUserAdmin)
 def changePassword(request):
     current_user = request.user
     strUsername = str(current_user.username)
@@ -395,10 +433,10 @@ def changePassword(request):
         u = User.objects.get(username=strUsername)
         u.set_password(str(newPassword))
         u.save()
-        return redirect('/admindashboard')
+        return redirect('/signin')
     return render(request, 'password_change.html')
 
-@allowed_admin(allowed_roles=dataUserArray)
+@allowed_admin(allowed_roles=dataUserAdmin)
 def editProfileAdmin(request):
     current_user = request.user
     dataU = UserModel.objects.get(id=current_user.id)
@@ -406,7 +444,7 @@ def editProfileAdmin(request):
         'dataU' : dataU,
     }
     if request.method == 'POST':
-        form = UserForm(request.POST, instance = dataU)
+        form = UserForm(request.POST, request.FILES, instance=dataU)
         current_user = request.user
         if form.is_valid():
             form.save()
